@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data and Models
+data/
+models/
+*.pth
+*.h5
+*.pkl
+
+# Kaggle
+.kaggle/
+kaggle.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# Logs and plots
+*.log
+*.png
+*.jpg
+*.jpeg
+training_history.json
+
+# Temporary files
+tmp/
+temp/
+*.tmp
