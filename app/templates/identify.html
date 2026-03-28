@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Identify Species - Marine Species ID{% endblock %}
+{% block title %}Identify Species - Fish Logger{% endblock %}
 
 {% block content %}
 <div class="hero">
@@ -17,6 +17,22 @@
         
         <button type="submit" class="btn btn-primary">Identify Species</button>
     </form>
+    
+    <div class="species-note">
+        <h3>Detectable Species</h3>
+        <p>The AI can identify the following 9 species:</p>
+        <ul>
+            <li>Black Sea Sprat</li>
+            <li>Gilt-Head Bream</li>
+            <li>Hourse Mackerel</li>
+            <li>Red Mullet</li>
+            <li>Red Sea Bream</li>
+            <li>Sea Bass</li>
+            <li>Shrimp</li>
+            <li>Striped Red Mullet</li>
+            <li>Trout</li>
+        </ul>
+    </div>
 </div>
 
 <style>
@@ -44,6 +60,42 @@
         padding: 12px;
         border: 2px solid #b8e6b8;
         background-color: white;
+    }
+    
+    .species-note {
+        margin-top: 30px;
+        padding: 20px;
+        background-color: #fafffa;
+        border: 2px solid #d4f1d4;
+    }
+    
+    .species-note h3 {
+        color: #1a3a1a;
+        margin-bottom: 10px;
+    }
+    
+    .species-note p {
+        color: #2d5a2d;
+        margin-bottom: 15px;
+    }
+    
+    .species-note ul {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    
+    .species-note li {
+        color: #2d5a2d;
+        padding: 5px;
+    }
+    
+    .species-note li:before {
+        content: "• ";
+        color: #b8e6b8;
+        font-weight: bold;
     }
 </style>
 {% endblock %}
