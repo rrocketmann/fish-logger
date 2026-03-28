@@ -121,7 +121,7 @@ def validate(model, val_loader, criterion, device):
     return epoch_loss, epoch_acc
 
 
-def train_model(data_dir='./data/fish_dataset/Fish_Dataset/Fish_Dataset', 
+def train_model(data_dir='./data/fish_train', 
                 model_type='resnet',
                 num_epochs=20,
                 batch_size=32,
@@ -254,7 +254,7 @@ if __name__ == "__main__":
     import argparse
     
     parser = argparse.ArgumentParser(description='Train fish classification model')
-    parser.add_argument('--data_dir', type=str, default='./data/fish_dataset/Fish_Dataset/Fish_Dataset',
+    parser.add_argument('--data_dir', type=str, default='./data/fish_train',
                         help='Path to fish dataset')
     parser.add_argument('--model_type', type=str, default='resnet', choices=['cnn', 'resnet'],
                         help='Model architecture to use')

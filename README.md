@@ -14,7 +14,7 @@ A deep learning system that identifies fish species from images using PyTorch an
 
 ## Dataset
 
-The system uses the ["A Large Scale Fish Dataset"](https://www.kaggle.com/datasets/crowww/a-large-scale-fish-dataset) containing images of 9 common fish species:
+The system uses the ["A Large Scale Fish Dataset"](https://www.kaggle.com/datasets/crowww/a-large-scale-fish-dataset) containing **9,000 images** of 9 common fish species (1,000 images each):
 
 1. Black Sea Sprat
 2. Gilt-Head Bream
@@ -64,6 +64,7 @@ This will download the dataset, train the model, and test predictions automatica
 #### 1. Download the Dataset
 ```bash
 python download_dataset.py
+python prepare_dataset.py  # Organize dataset for training
 ```
 
 #### 2. Train the Model
@@ -76,7 +77,7 @@ python train.py --model_type cnn --epochs 30
 ```
 
 **Training Options**:
-- `--data_dir`: Path to dataset (default: `./data/fish_dataset/Fish_Dataset/Fish_Dataset`)
+- `--data_dir`: Path to dataset (default: `./data/fish_train`)
 - `--model_type`: `resnet` or `cnn` (default: `resnet`)
 - `--epochs`: Number of training epochs (default: 20)
 - `--batch_size`: Batch size (default: 32)
