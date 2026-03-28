@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero">
+    <h1>🐟 Welcome to Fish Logger</h1>
+    <p>A community-powered fish identification platform</p>
+    <p>Upload your fish photos, label them, and help build the largest fish database!</p>
+    <div style="margin-top: 30px;">
+        <a href="{{ url_for('upload') }}" class="btn">Upload a Fish Photo</a>
+        <a href="{{ url_for('community') }}" class="btn btn-secondary" style="margin-left: 20px;">Browse Community</a>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
+    <div class="card">
+        <h2 style="margin-bottom: 15px;">📸 Upload & Label</h2>
+        <p>Share your fish photos and label them with the species name. Help build our community database!</p>
+    </div>
+    
+    <div class="card">
+        <h2 style="margin-bottom: 15px;">🌊 Community Gallery</h2>
+        <p>Browse fish photos uploaded by community members from around the world. Learn about different species!</p>
+    </div>
+    
+    <div class="card">
+        <h2 style="margin-bottom: 15px;">📊 Track Progress</h2>
+        <p>See statistics about community contributions and discover the most common fish species uploaded.</p>
+    </div>
+</div>
+{% endblock %}

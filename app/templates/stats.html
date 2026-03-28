@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Community Stats - Fish Logger{% endblock %}
+
+{% block extra_styles %}
+<style>
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
+    }
+    
+    .stat-card {
+        background-color: white;
+        border: 3px solid #a8d5a8;
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .stat-number {
+        font-size: 48px;
+        font-weight: bold;
+        color: #7cb87c;
+        margin: 10px 0;
+    }
+    
+    .stat-label {
+        font-size: 18px;
+        color: #2d5a2d;
+    }
+    
+    .species-list {
+        list-style: none;
+        margin-top: 20px;
+    }
+    
+    .species-item {
+        background-color: white;
+        border: 3px solid #a8d5a8;
+        padding: 15px 20px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .species-name {
+        font-weight: bold;
+        color: #1a3a1a;
+    }
+    
+    .species-count {
+        background-color: #7cb87c;
+        color: white;
+        padding: 5px 15px;
+        font-weight: bold;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<h1 style="font-size: 36px; margin-bottom: 30px;">Community Statistics</h1>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label">Total Uploads</div>
+        <div class="stat-number">{{ total_uploads }}</div>
+        <p>Fish photos shared</p>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-label">Species Identified</div>
+        <div class="stat-number">{{ species_counts|length }}</div>
+        <p>Different fish species</p>
+    </div>
+    
+    <div class="stat-card">
+        <div class="stat-label">Community Power</div>
+        <div class="stat-number">🌊</div>
+        <p>Growing every day!</p>
+    </div>
+</div>
+
+{% if species_counts %}
+<div style="margin-top: 50px;">
+    <h2 style="font-size: 28px; margin-bottom: 20px;">Species Breakdown</h2>
+    <ul class="species-list">
+        {% for species, count in species_counts|sort(attribute='1', reverse=True) %}
+        <li class="species-item">
+            <span class="species-name">🐟 {{ species }}</span>
+            <span class="species-count">{{ count }} photos</span>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div style="text-align: center; margin-top: 40px;">
+    <a href="{{ url_for('community') }}" class="btn btn-secondary">View Gallery</a>
+    <a href="{{ url_for('upload') }}" class="btn" style="margin-left: 20px;">Add Your Photo</a>
+</div>
+{% endblock %}
