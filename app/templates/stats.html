@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Community Stats - Fish Logger{% endblock %}
+{% block title %}Statistics - Fish Logger{% endblock %}
 
 {% block extra_styles %}
 <style>
@@ -60,25 +60,19 @@
 {% endblock %}
 
 {% block content %}
-<h1 style="font-size: 36px; margin-bottom: 30px;">Community Statistics</h1>
+<h1 style="font-size: 36px; margin-bottom: 30px;">Statistics</h1>
 
 <div class="stats-grid">
     <div class="stat-card">
-        <div class="stat-label">Total Uploads</div>
+        <div class="stat-label">Total Photos</div>
         <div class="stat-number">{{ total_uploads }}</div>
-        <p>Fish photos shared</p>
+        <p>Uploaded</p>
     </div>
     
     <div class="stat-card">
-        <div class="stat-label">Species Identified</div>
+        <div class="stat-label">Species</div>
         <div class="stat-number">{{ species_counts|length }}</div>
-        <p>Different fish species</p>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-label">Community Power</div>
-        <div class="stat-number">🌊</div>
-        <p>Growing every day!</p>
+        <p>Identified</p>
     </div>
 </div>
 
@@ -88,8 +82,8 @@
     <ul class="species-list">
         {% for species, count in species_counts|sort(attribute='1', reverse=True) %}
         <li class="species-item">
-            <span class="species-name">🐟 {{ species }}</span>
-            <span class="species-count">{{ count }} photos</span>
+            <span class="species-name">{{ species }}</span>
+            <span class="species-count">{{ count }}</span>
         </li>
         {% endfor %}
     </ul>
@@ -97,7 +91,7 @@
 {% endif %}
 
 <div style="text-align: center; margin-top: 40px;">
-    <a href="{{ url_for('community') }}" class="btn btn-secondary">View Gallery</a>
-    <a href="{{ url_for('upload') }}" class="btn" style="margin-left: 20px;">Add Your Photo</a>
+    <a href="{{ url_for('community') }}" class="btn btn-secondary">Gallery</a>
+    <a href="{{ url_for('upload') }}" class="btn" style="margin-left: 20px;">Upload</a>
 </div>
 {% endblock %}
