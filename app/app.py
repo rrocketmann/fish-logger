@@ -195,6 +195,48 @@ def identify():
     
     return render_template('identify.html')
 
+@app.route('/api/identify', methods=['POST'])
+def api_identify():
+    """API endpoint for mobile app AI identification"""
+    if 'fish_image' not in request.files:
+        return jsonify({'error': 'No file provided'}), 400
+    
+    file = request.files['fish_image']
+    
+    if file.filename == '' or not allowed_file(file.filename):
+        return jsonify({'error': 'Invalid file'}), 400
+    
+    # Secure the filename and add timestamp
+    filename = secure_filename(file.filename)
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    filename = f"{timestamp}_{filename}"
+    
+    # Save file temporarily
+    ensure_upload_dir()
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+    
+    # Get predictor and make prediction
+    pred = get_predictor()
+    if pred is None:
+        os.remove(filepath)
+        return jsonify({'error': 'AI model not available'}), 503
+    
+    try:
+        results = pred.predict(filepath, top_k=5)
+        os.remove(filepath)  # Clean up temp file
+        
+        predictions = [
+            {'species': species, 'probability': float(prob)}
+            for species, prob in results
+        ]
+        
+        return jsonify({'predictions': predictions})
+    except Exception as e:
+        if os.path.exists(filepath):
+            os.remove(filepath)
+        return jsonify({'error': f'Identification failed: {str(e)}'}), 500
+
 # API Endpoints for mobile app
 @app.route('/api/submit', methods=['POST'])
 def api_submit():
