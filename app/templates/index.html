@@ -2,28 +2,28 @@
 
 {% block content %}
 <div class="hero">
-    <h1>Machine Learning Fish Identification</h1>
-    <p>Upload and label fish photos</p>
+    <h1>Marine Species Identification</h1>
+    <p>For researchers and fishers to identify and document fish species</p>
     <div style="margin-top: 30px;">
-        <a href="{{ url_for('upload') }}" class="btn">Upload Photo</a>
-        <a href="{{ url_for('community') }}" class="btn btn-secondary" style="margin-left: 20px;">View Gallery</a>
+        <a href="{{ url_for('upload') }}" class="btn">Submit Catch</a>
+        <a href="{{ url_for('community') }}" class="btn btn-secondary" style="margin-left: 20px;">View Database</a>
     </div>
 </div>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
     <div class="card">
-        <h2 style="margin-bottom: 15px;">Upload</h2>
-        <p>Upload fish photos and label them with species names.</p>
+        <h2 style="margin-bottom: 15px;">For Fishers</h2>
+        <p>Upload photos of your catch to identify unknown species. Works offline on mobile.</p>
     </div>
     
     <div class="card">
-        <h2 style="margin-bottom: 15px;">Gallery</h2>
-        <p>Browse uploaded fish photos and species information.</p>
+        <h2 style="margin-bottom: 15px;">For Researchers</h2>
+        <p>Access documented catches and species data. Download database for analysis.</p>
     </div>
     
     <div class="card">
-        <h2 style="margin-bottom: 15px;">AI Training</h2>
-        <p>Photos contribute to machine learning model training.</p>
+        <h2 style="margin-bottom: 15px;">Offline Mobile</h2>
+        <p>Mobile app stores data locally. Syncs to database when network available.</p>
     </div>
 </div>
 {% endblock %}

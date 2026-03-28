@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 
-{% block title %}Upload - Fish Logger{% endblock %}
+{% block title %}Submit Catch - Marine Species ID{% endblock %}
 
 {% block content %}
-<h1 style="font-size: 36px; margin-bottom: 30px;">Upload Fish Photo</h1>
+<h1 style="font-size: 36px; margin-bottom: 30px;">Submit Catch Data</h1>
 
 <div class="card" style="max-width: 700px; margin: 0 auto;">
     <form method="POST" enctype="multipart/form-data">
@@ -13,34 +13,34 @@
         </div>
         
         <div class="form-group">
-            <label for="species_label">Species *</label>
+            <label for="species_label">Species (if known)</label>
             <input type="text" id="species_label" name="species_label" 
-                   placeholder="e.g., Trout, Sea Bass, Red Mullet" required>
+                   placeholder="e.g., Trout, Sea Bass, or 'Unknown'">
         </div>
         
         <div class="form-group">
-            <label for="uploader_name">Name *</label>
+            <label for="uploader_name">Your Name *</label>
             <input type="text" id="uploader_name" name="uploader_name" 
-                   placeholder="Your name" required>
+                   placeholder="Fisher or researcher name" required>
         </div>
         
         <div class="form-group">
             <label for="location">Location</label>
             <input type="text" id="location" name="location" 
-                   placeholder="Optional">
+                   placeholder="Coordinates or location name">
         </div>
         
         <div class="form-group">
             <label for="notes">Notes</label>
             <textarea id="notes" name="notes" 
-                      placeholder="Optional"></textarea>
+                      placeholder="Size, depth, conditions, etc."></textarea>
         </div>
         
-        <button type="submit" class="btn" style="width: 100%;">Upload</button>
+        <button type="submit" class="btn" style="width: 100%;">Submit to Database</button>
     </form>
 </div>
 
 <div style="text-align: center; margin-top: 30px;">
-    <a href="{{ url_for('community') }}" class="btn btn-secondary">View Gallery</a>
+    <a href="{{ url_for('community') }}" class="btn btn-secondary">View Database</a>
 </div>
 {% endblock %}

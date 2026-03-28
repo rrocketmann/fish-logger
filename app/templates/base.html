@@ -145,7 +145,7 @@
         select {
             width: 100%;
             padding: 12px;
-            border: 3px solid #a8d5a8;
+            border: 3px solid #d4f1d4;
             background-color: white;
             font-size: 16px;
             font-family: inherit;
@@ -168,24 +168,15 @@
         }
         
         .alert-success {
-            background-color: #c8e6c8;
-            border-color: #7cb87c;
+            background-color: #e8f5e8;
+            border-color: #b8e6b8;
             color: #1a3a1a;
         }
         
         .alert-error {
-            background-color: #ffc8c8;
-            border-color: #ff8080;
+            background-color: #ffd4d4;
+            border-color: #ffb3b3;
             color: #4a0000;
-        }
-        
-        /* Footer */
-        footer {
-            background-color: #a8d5a8;
-            padding: 30px 0;
-            margin-top: 60px;
-            text-align: center;
-            border-top: 3px solid #7cb87c;
         }
         
         {% block extra_styles %}{% endblock %}
@@ -194,12 +185,11 @@
 <body>
     <header>
         <nav>
-            <a href="{{ url_for('index') }}" class="logo">Fish Logger</a>
+            <a href="{{ url_for('index') }}" class="logo">Marine Species ID</a>
             <ul class="nav-links">
                 <li><a href="{{ url_for('index') }}">Home</a></li>
-                <li><a href="{{ url_for('community') }}">Gallery</a></li>
-                <li><a href="{{ url_for('upload') }}">Upload</a></li>
-                <li><a href="{{ url_for('stats') }}">Stats</a></li>
+                <li><a href="{{ url_for('community') }}">Database</a></li>
+                <li><a href="{{ url_for('upload') }}">Submit</a></li>
             </ul>
         </nav>
     </header>
@@ -217,10 +207,6 @@
         
         {% block content %}{% endblock %}
     </main>
-    
-    <footer>
-        <p>Fish Logger</p>
-    </footer>
     
     {% block extra_scripts %}{% endblock %}
 </body>
