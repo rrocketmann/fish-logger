@@ -7,10 +7,14 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
+import sys
 import json
 import csv
 from io import StringIO, BytesIO
 from pathlib import Path
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from predict import FishPredictor
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'fish-logger-secret-key-change-in-production'
@@ -48,6 +52,18 @@ class FishUpload(db.Model):
     
     def __repr__(self):
         return f'<FishUpload {self.species_label}>'
+
+# Initialize AI predictor
+predictor = None
+def get_predictor():
+    global predictor
+    if predictor is None:
+        model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models', 'best_fish_model.pth'))
+        if os.path.exists(model_path):
+            predictor = FishPredictor(model_path)
+        else:
+            print(f"Warning: Model not found at {model_path}")
+    return predictor
 
 # Helper functions
 def allowed_file(filename):
@@ -131,6 +147,53 @@ def like_upload(upload_id):
     upload.likes += 1
     db.session.commit()
     return jsonify({'likes': upload.likes})
+
+@app.route('/identify', methods=['GET', 'POST'])
+def identify():
+    """AI identification page"""
+    if request.method == 'POST':
+        if 'fish_image' not in request.files:
+            flash('No file selected', 'error')
+            return redirect(request.url)
+        
+        file = request.files['fish_image']
+        
+        if file.filename == '':
+            flash('No file selected', 'error')
+            return redirect(request.url)
+        
+        if file and allowed_file(file.filename):
+            # Secure the filename and add timestamp
+            filename = secure_filename(file.filename)
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            filename = f"{timestamp}_{filename}"
+            
+            # Save file temporarily
+            ensure_upload_dir()
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            file.save(filepath)
+            
+            # Get predictor and make prediction
+            pred = get_predictor()
+            if pred is None:
+                flash('AI model not available', 'error')
+                os.remove(filepath)
+                return redirect(request.url)
+            
+            try:
+                results = pred.predict(filepath, top_k=5)
+                return render_template('identify_result.html', 
+                                     results=results, 
+                                     filename=filename)
+            except Exception as e:
+                flash(f'Error during identification: {str(e)}', 'error')
+                os.remove(filepath)
+                return redirect(request.url)
+        else:
+            flash('Invalid file type', 'error')
+            return redirect(request.url)
+    
+    return render_template('identify.html')
 
 # API Endpoints for mobile app
 @app.route('/api/submit', methods=['POST'])

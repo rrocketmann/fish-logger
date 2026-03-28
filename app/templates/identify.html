@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block title %}Identify Species - Marine Species ID{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>AI Species Identification</h1>
+    <p>Upload a fish photo and our AI will identify the species</p>
+</div>
+
+<div class="upload-form">
+    <form method="POST" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="fish_image">Fish Photo</label>
+            <input type="file" id="fish_image" name="fish_image" accept="image/*" required>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Identify Species</button>
+    </form>
+</div>
+
+<style>
+    .upload-form {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #e8f5e8;
+        border: 3px solid #d4f1d4;
+        padding: 40px;
+    }
+    
+    .form-group {
+        margin-bottom: 25px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #1a3a1a;
+    }
+    
+    .form-group input[type="file"] {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #b8e6b8;
+        background-color: white;
+    }
+</style>
+{% endblock %}
