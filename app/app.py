@@ -301,6 +301,29 @@ def identify_feedback():
         predicted_confidence=predicted_confidence,
         corrected_species=corrected_species
     )
+
+    # Add corrected AI image into main database entries.
+    existing_upload = FishUpload.query.filter_by(filename=filename).first()
+    if existing_upload:
+        existing_upload.species_label = corrected_species
+        if not existing_upload.notes:
+            existing_upload.notes = (
+                f"Corrected from AI prediction: {predicted_species} "
+                f"({predicted_confidence:.2f}%)"
+            )
+    else:
+        corrected_upload = FishUpload(
+            filename=filename,
+            species_label=corrected_species,
+            uploader_name='AI Correction',
+            location='AI Identification',
+            notes=(
+                f"Corrected from AI prediction: {predicted_species} "
+                f"({predicted_confidence:.2f}%)"
+            )
+        )
+        db.session.add(corrected_upload)
+
     db.session.add(feedback)
     db.session.commit()
 

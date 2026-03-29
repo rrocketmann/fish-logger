@@ -66,6 +66,47 @@
             border: 2px solid #b8e6b8;
             background-color: white;
         }
+
+        .form-group input[type="file"]::file-selector-button {
+            margin-right: 12px;
+            padding: 10px 14px;
+            background-color: #e8f5e8;
+            border: 2px solid #b8e6b8;
+            color: #1a3a1a;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .form-group input[type="file"]::-webkit-file-upload-button {
+            margin-right: 12px;
+            padding: 10px 14px;
+            background-color: #e8f5e8;
+            border: 2px solid #b8e6b8;
+            color: #1a3a1a;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .preview-box {
+            margin-top: 16px;
+            padding: 12px;
+            background-color: white;
+            border: 2px solid #d4f1d4;
+        }
+
+        .preview-box p {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1a3a1a;
+        }
+
+        .preview-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border: 2px solid #b8e6b8;
+            background-color: #fafffa;
+        }
         
         .btn-primary {
             width: 100%;
@@ -145,9 +186,14 @@
                 <div class="form-group">
                     <label for="fish_image">Fish Photo</label>
                     <input type="file" id="fish_image" name="fish_image" accept="image/*" required>
+
+                    <div id="preview-box" class="preview-box" style="display: none;">
+                        <p>Selected Image Preview</p>
+                        <img id="preview-image" class="preview-image" alt="Selected fish image preview">
+                    </div>
                 </div>
                 
-                <button type="submit" class="btn-primary">Identify Fish</button>
+                <button type="submit" class="btn-primary">Analyze Fish Photo</button>
             </form>
         </div>
         
@@ -156,5 +202,23 @@
             <a href="/export/json" class="btn-secondary" download>Download Database</a>
         </div>
     </div>
+
+    <script>
+        const identifyInput = document.getElementById('fish_image');
+        const identifyPreviewBox = document.getElementById('preview-box');
+        const identifyPreviewImage = document.getElementById('preview-image');
+
+        identifyInput.addEventListener('change', function () {
+            const file = this.files && this.files[0];
+            if (!file) {
+                identifyPreviewBox.style.display = 'none';
+                identifyPreviewImage.removeAttribute('src');
+                return;
+            }
+
+            identifyPreviewImage.src = URL.createObjectURL(file);
+            identifyPreviewBox.style.display = 'block';
+        });
+    </script>
 </body>
 </html>
