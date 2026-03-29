@@ -1,29 +1,160 @@
-{% extends "base.html" %}
-
-{% block content %}
-<div class="hero">
-    <h1>Fish Logger</h1>
-    <p>For researchers and fishers to identify and document fish species</p>
-    <div style="margin-top: 30px;">
-        <a href="{{ url_for('upload') }}" class="btn">Submit Catch</a>
-        <a href="{{ url_for('community') }}" class="btn btn-secondary" style="margin-left: 20px;">View Database</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fish Logger</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background-color: #fafffa;
+            color: #1a3a1a;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .title {
+            text-align: center;
+            font-size: 48px;
+            font-weight: bold;
+            color: #1a3a1a;
+            margin: 40px 0;
+        }
+        
+        .main-box {
+            background-color: #e8f5e8;
+            border: 3px solid #d4f1d4;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+        
+        .main-box h2 {
+            font-size: 24px;
+            color: #1a3a1a;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .upload-form {
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #1a3a1a;
+        }
+        
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #b8e6b8;
+            background-color: white;
+        }
+        
+        .btn-primary {
+            width: 100%;
+            padding: 18px;
+            background-color: #b8e6b8;
+            border: 3px solid #7cb87c;
+            color: #1a3a1a;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary:hover {
+            background-color: #7cb87c;
+            color: white;
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .btn-secondary {
+            padding: 15px;
+            background-color: #e8f5e8;
+            border: 2px solid #b8e6b8;
+            color: #1a3a1a;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: block;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #b8e6b8;
+        }
+        
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 2px solid;
+        }
+        
+        .alert-success {
+            background-color: #e8f5e8;
+            border-color: #b8e6b8;
+            color: #1a3a1a;
+        }
+        
+        .alert-error {
+            background-color: #ffd4d4;
+            border-color: #ffb3b3;
+            color: #4a0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Fish Logger</h1>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <div class="main-box">
+            <h2>Upload Photo for Identification</h2>
+            <form method="POST" action="{{ url_for('identify') }}" enctype="multipart/form-data" class="upload-form">
+                <div class="form-group">
+                    <label for="fish_image">Fish Photo</label>
+                    <input type="file" id="fish_image" name="fish_image" accept="image/*" required>
+                </div>
+                
+                <button type="submit" class="btn-primary">Identify Fish</button>
+            </form>
+        </div>
+        
+        <div class="button-group">
+            <a href="{{ url_for('upload') }}" class="btn-secondary">Submit to Database</a>
+            <a href="/export/json" class="btn-secondary" download>Download Database</a>
+        </div>
     </div>
-</div>
-
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;">
-    <div class="card">
-        <h2 style="margin-bottom: 15px;">For Fishers</h2>
-        <p>Upload photos of your catch to identify unknown species. Works offline on mobile.</p>
-    </div>
-    
-    <div class="card">
-        <h2 style="margin-bottom: 15px;">For Researchers</h2>
-        <p>Access documented catches and species data. Download database for analysis.</p>
-    </div>
-    
-    <div class="card">
-        <h2 style="margin-bottom: 15px;">Offline Mobile</h2>
-        <p>Mobile app stores data locally. Syncs to database when network available.</p>
-    </div>
-</div>
-{% endblock %}
+</body>
+</html>
