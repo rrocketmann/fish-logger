@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import axios from 'axios';
 
-const SERVER_URL = 'http://100.118.217.22:5000';
+const SERVER_URL = 'http://100.118.217.22:5002';
 
 export default function IdentifyScreen({ route, navigation }) {
   const { photoUri } = route.params;

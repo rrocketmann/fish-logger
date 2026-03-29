@@ -68,6 +68,25 @@ This will:
 - Generate an `.apk` file
 - Download link provided when complete
 
+### 5. Build Play Store AAB (App Store upload file)
+
+```bash
+# Generates Android App Bundle (.aab) for Google Play
+eas build --platform android --profile production
+```
+
+You can also run it with npm:
+
+```bash
+npm run build:android:aab
+```
+
+For testing APK builds:
+
+```bash
+npm run build:android:apk
+```
+
 **Install APK on Pixel 9a:**
 1. Download the `.apk` file
 2. Transfer to your phone

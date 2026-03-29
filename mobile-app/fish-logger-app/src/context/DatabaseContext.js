@@ -5,7 +5,7 @@ import axios from 'axios';
 
 const DatabaseContext = createContext();
 
-const SERVER_URL = 'http://100.118.217.22:5000';
+const SERVER_URL = 'http://100.118.217.22:5002';
 
 export const DatabaseProvider = ({ children }) => {
   const [db, setDb] = useState(null);
