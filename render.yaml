@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: fish-logger
+    env: python
+    buildCommand: pip install -r requirements-render.txt
+    startCommand: cd app && gunicorn --bind 0.0.0.0:$PORT app:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
