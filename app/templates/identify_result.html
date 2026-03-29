@@ -1,270 +1,163 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Identification Results - Fish Logger</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-            background-color: #fafffa;
-            color: #1a3a1a;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .title {
-            text-align: center;
-            font-size: 48px;
-            font-weight: bold;
-            color: #1a3a1a;
-            margin: 40px 0;
-        }
-        
-        .image-preview {
-            background-color: #e8f5e8;
-            border: 3px solid #d4f1d4;
-            padding: 20px;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        .image-preview img {
-            max-width: 100%;
-            max-height: 400px;
-            border: 2px solid #b8e6b8;
-        }
-        
-        .predictions {
-            background-color: #e8f5e8;
-            border: 3px solid #d4f1d4;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-        
-        .predictions h2 {
-            margin-bottom: 25px;
-            color: #1a3a1a;
-            font-size: 24px;
-        }
-        
-        .prediction-list {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        
-        .prediction-item {
-            background-color: white;
-            border: 2px solid #b8e6b8;
-            padding: 15px;
-        }
-        
-        .prediction-bar-container {
-            width: 100%;
-            height: 30px;
-            background-color: #fafffa;
-            border: 2px solid #d4f1d4;
-            margin-bottom: 10px;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .prediction-bar {
-            height: 100%;
-            background-color: #b8e6b8;
-            transition: width 0.5s;
-        }
-        
-        .prediction-info {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .species-name {
-            font-size: 18px;
-            font-weight: 600;
-            color: #1a3a1a;
-        }
-        
-        .probability {
-            font-size: 20px;
-            font-weight: 700;
-            color: #2d5a2d;
-        }
-        
-        .actions {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
-        }
-        
-        .btn-primary {
-            padding: 15px 30px;
-            background-color: #b8e6b8;
-            border: 3px solid #7cb87c;
-            color: #1a3a1a;
-            font-size: 16px;
-            font-weight: bold;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .btn-primary:hover {
-            background-color: #7cb87c;
-            color: white;
-        }
-        
-        .btn-secondary {
-            padding: 15px 30px;
-            background-color: #e8f5e8;
-            border: 2px solid #b8e6b8;
-            color: #1a3a1a;
-            font-size: 16px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .btn-secondary:hover {
-            background-color: #b8e6b8;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1 class="title">Fish Logger</h1>
-        
-        <div class="image-preview">
-            <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Uploaded fish">
+{% extends "base.html" %}
+
+{% block title %}Identification Results - Fish Logger{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>Identification Result</h1>
+    <p>Our AI has analyzed your submission.</p>
+</div>
+
+<div class="result-container">
+    <div class="result-card">
+        <h2>Submitted Image</h2>
+        <img src="{{ url_for('static', filename='uploads/' + filename) }}" alt="Submitted Fish" class="result-image">
+    </div>
+
+    <div class="result-card">
+        <h2>AI Prediction</h2>
+        <div class="prediction-info">
+            <p class="prediction-label">Species:</p>
+            <p class="prediction-value">{{ species }}</p>
+            <p class="prediction-label">Confidence Score:</p>
+            <p class="prediction-value">{{ '%.2f'|format(confidence|float) }}%</p>
         </div>
-        
-        <div class="predictions">
-            <h2>Top 5 Predictions</h2>
-            <div class="prediction-list">
-                {% for species, probability in results %}
-                <div class="prediction-item">
-                    <div class="prediction-bar-container">
-                        <div class="prediction-bar" style="width: {{ probability * 100 }}%"></div>
-                    </div>
-                    <div class="prediction-info">
-                        <span class="species-name">{{ species }}</span>
-                        <span class="probability">{{ "%.1f"|format(probability * 100) }}%</span>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
+
+        <div class="feedback-box">
+            <button type="button" class="btn btn-warning" onclick="toggleFeedbackForm()">AI is Incorrect</button>
+
+            <form id="feedback-form" method="POST" action="{{ url_for('identify_feedback') }}" class="feedback-form" style="display: none;">
+                <input type="hidden" name="filename" value="{{ filename }}">
+                <input type="hidden" name="predicted_species" value="{{ species }}">
+                <input type="hidden" name="predicted_confidence" value="{{ confidence|float }}">
+
+                <label for="corrected_species" class="prediction-label">Select Correct Species</label>
+                <select id="corrected_species" name="corrected_species" required>
+                    {% for option in species_options %}
+                    <option value="{{ option }}">{{ option }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="btn btn-submit">Submit Correction</button>
+            </form>
         </div>
-        
-        <div class="actions">
-            <a href="{{ url_for('index') }}" class="btn-primary">Identify Another</a>
-            <a href="{{ url_for('upload') }}" class="btn-secondary">Submit to Database</a>
+
+        <div class="button-group">
+            <a href="{{ url_for('identify') }}" class="btn">Identify Another</a>
         </div>
     </div>
-</body>
-</html>
-        margin: 0 auto;
+</div>
+
+<script>
+function toggleFeedbackForm() {
+    const form = document.getElementById('feedback-form');
+    if (form.style.display === 'none') {
+        form.style.display = 'block';
+    } else {
+        form.style.display = 'none';
     }
-    
-    .image-preview {
-        background-color: #e8f5e8;
-        border: 3px solid #d4f1d4;
-        padding: 20px;
-        text-align: center;
-        margin-bottom: 30px;
+}
+</script>
+
+<style>
+    .result-container {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        align-items: start;
+        margin-top: 40px;
     }
-    
-    .image-preview img {
-        max-width: 100%;
-        max-height: 400px;
-        border: 2px solid #b8e6b8;
-    }
-    
-    .predictions {
+
+    .result-card {
         background-color: #e8f5e8;
         border: 3px solid #d4f1d4;
         padding: 30px;
+    }
+
+    .result-card h2 {
+        font-size: 24px;
+        color: #1a3a1a;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .result-image {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        object-fit: contain;
+        border: 2px solid #b8e6b8;
+    }
+
+    .prediction-info {
         margin-bottom: 30px;
     }
-    
-    .predictions h2 {
-        margin-bottom: 25px;
-        color: #1a3a1a;
-    }
-    
-    .prediction-list {
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-    }
-    
-    .prediction-item {
-        background-color: white;
-        border: 2px solid #b8e6b8;
-        padding: 15px;
-    }
-    
-    .prediction-bar-container {
-        width: 100%;
-        height: 30px;
-        background-color: #fafffa;
-        border: 2px solid #d4f1d4;
-        margin-bottom: 10px;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .prediction-bar {
-        height: 100%;
-        background-color: #b8e6b8;
-        transition: width 0.5s;
-    }
-    
-    .prediction-info {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-    
-    .species-name {
+
+    .prediction-label {
         font-size: 18px;
         font-weight: 600;
         color: #1a3a1a;
+        margin-bottom: 5px;
     }
-    
-    .probability {
-        font-size: 20px;
-        font-weight: 700;
+
+    .prediction-value {
+        font-size: 22px;
+        font-weight: bold;
         color: #2d5a2d;
+        margin-bottom: 20px;
+        background-color: white;
+        padding: 10px;
+        border: 2px solid #b8e6b8;
+        text-align: center;
     }
-    
-    .actions {
-        display: flex;
-        gap: 20px;
-        justify-content: center;
+
+    .button-group {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
     }
-    
-    .btn-secondary {
+
+    .feedback-box {
+        margin-bottom: 20px;
+    }
+
+    .feedback-form {
+        margin-top: 12px;
+        display: grid;
+        gap: 10px;
+    }
+
+    .feedback-form select {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #b8e6b8;
         background-color: white;
         color: #1a3a1a;
-        border: 2px solid #b8e6b8;
+        font-size: 15px;
     }
-    
-    .btn-secondary:hover {
-        background-color: #e8f5e8;
+
+    .btn {
+        display: inline-block;
+        padding: 12px 16px;
+        border: 2px solid #7cb87c;
+        background-color: #b8e6b8;
+        color: #1a3a1a;
+        text-decoration: none;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    .btn-warning {
+        width: 100%;
+        cursor: pointer;
+        border-color: #d8a55b;
+        background-color: #ffe9c8;
+        color: #4a3719;
+    }
+
+    .btn-submit {
+        width: 100%;
+        cursor: pointer;
     }
 </style>
 {% endblock %}

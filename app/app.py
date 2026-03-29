@@ -7,14 +7,9 @@ from flask_sqlalchemy import SQLAlchemy
 from werkzeug.utils import secure_filename
 from datetime import datetime
 import os
-import sys
 import json
 import csv
 from io import StringIO, BytesIO
-from pathlib import Path
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from predict import FishPredictor
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'fish-logger-secret-key-change-in-production'
@@ -25,6 +20,18 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
 db = SQLAlchemy(app)
+
+SPECIES_OPTIONS = [
+    'Black Sea Sprat',
+    'Gilt-Head Bream',
+    'Hourse Mackerel',
+    'Red Mullet',
+    'Red Sea Bream',
+    'Sea Bass',
+    'Shrimp',
+    'Striped Red Mullet',
+    'Trout'
+]
 
 # Database Models
 class FishUpload(db.Model):
@@ -53,16 +60,37 @@ class FishUpload(db.Model):
     def __repr__(self):
         return f'<FishUpload {self.species_label}>'
 
+
+class AIFeedback(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    filename = db.Column(db.String(200), nullable=False)
+    predicted_species = db.Column(db.String(100), nullable=False)
+    predicted_confidence = db.Column(db.Float, nullable=False)
+    corrected_species = db.Column(db.String(100), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<AIFeedback {self.predicted_species} -> {self.corrected_species}>'
+
 # Initialize AI predictor
 predictor = None
 def get_predictor():
     global predictor
     if predictor is None:
         model_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'models', 'best_fish_model.pth'))
-        if os.path.exists(model_path):
-            predictor = FishPredictor(model_path)
-        else:
+        if not os.path.exists(model_path):
             print(f"Warning: Model not found at {model_path}")
+            return None
+
+        # Lazy import prevents app startup failures when AI deps are not installed.
+        try:
+            import sys
+            sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+            from predict import FishPredictor
+            predictor = FishPredictor(model_path)
+        except Exception as e:
+            print(f"Warning: Could not initialize predictor: {e}")
+            return None
     return predictor
 
 # Helper functions
@@ -133,7 +161,7 @@ def upload():
             db.session.commit()
             
             flash('Catch data submitted successfully', 'success')
-            return redirect(url_for('community'))
+            return redirect(url_for('upload'))
         else:
             flash('Invalid file type. Please upload an image (PNG, JPG, JPEG, GIF)', 'error')
             return redirect(request.url)
@@ -182,9 +210,17 @@ def identify():
             
             try:
                 results = pred.predict(filepath, top_k=5)
-                return render_template('identify_result.html', 
-                                     results=results, 
-                                     filename=filename)
+                top_species = 'Unknown'
+                top_confidence = 0.0
+                if results:
+                    top_species, top_confidence = results[0]
+                return render_template(
+                    'identify_result.html',
+                    species=top_species,
+                    confidence=float(top_confidence) * 100,
+                    filename=filename,
+                    species_options=SPECIES_OPTIONS
+                )
             except Exception as e:
                 flash(f'Error during identification: {str(e)}', 'error')
                 os.remove(filepath)
@@ -193,7 +229,7 @@ def identify():
             flash('Invalid file type', 'error')
             return redirect(request.url)
     
-    return render_template('identify.html')
+    return redirect(url_for('index'))
 
 @app.route('/api/identify', methods=['POST'])
 def api_identify():
@@ -236,6 +272,40 @@ def api_identify():
         if os.path.exists(filepath):
             os.remove(filepath)
         return jsonify({'error': f'Identification failed: {str(e)}'}), 500
+
+
+@app.route('/identify/feedback', methods=['POST'])
+def identify_feedback():
+    """Store feedback when user marks AI prediction incorrect."""
+    filename = request.form.get('filename', '').strip()
+    predicted_species = request.form.get('predicted_species', '').strip()
+    confidence_raw = request.form.get('predicted_confidence', '0').strip()
+    corrected_species = request.form.get('corrected_species', '').strip()
+
+    if not filename or not predicted_species or not corrected_species:
+        flash('Missing feedback data. Please try again.', 'error')
+        return redirect(url_for('index'))
+
+    if corrected_species not in SPECIES_OPTIONS:
+        flash('Invalid species selected.', 'error')
+        return redirect(url_for('index'))
+
+    try:
+        predicted_confidence = float(confidence_raw)
+    except ValueError:
+        predicted_confidence = 0.0
+
+    feedback = AIFeedback(
+        filename=filename,
+        predicted_species=predicted_species,
+        predicted_confidence=predicted_confidence,
+        corrected_species=corrected_species
+    )
+    db.session.add(feedback)
+    db.session.commit()
+
+    flash('Thanks! Your correction has been saved.', 'success')
+    return redirect(url_for('index'))
 
 # API Endpoints for mobile app
 @app.route('/api/submit', methods=['POST'])
@@ -359,4 +429,4 @@ with app.app_context():
     ensure_upload_dir()
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

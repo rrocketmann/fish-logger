@@ -1,99 +1,74 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Submit Catch - Fish Logger</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background-color: #fafffa; color: #1a3a1a; }
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .title { text-align: center; font-size: 48px; font-weight: bold; color: #1a3a1a; margin: 40px 0; }
+        .main-box { background-color: #e8f5e8; border: 3px solid #d4f1d4; padding: 40px; margin-bottom: 30px; }
+        .main-box h2 { font-size: 24px; color: #1a3a1a; margin-bottom: 20px; text-align: center; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; margin-bottom: 10px; font-weight: 600; color: #1a3a1a; }
+        .form-group input[type="file"], .form-group input[type="text"], .form-group textarea {
+            width: 100%; padding: 12px; border: 2px solid #b8e6b8; background-color: white;
+        }
+        .btn-primary { width: 100%; padding: 18px; background-color: #b8e6b8; border: 3px solid #7cb87c; color: #1a3a1a; font-size: 18px; font-weight: bold; cursor: pointer; }
+        .btn-primary:hover { background-color: #7cb87c; color: white; }
+        .button-group { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .btn-secondary { padding: 15px; background-color: #e8f5e8; border: 2px solid #b8e6b8; color: #1a3a1a; font-size: 16px; font-weight: 600; text-decoration: none; display: block; text-align: center; }
+        .btn-secondary:hover { background-color: #b8e6b8; }
+        .alert { padding: 15px; margin-bottom: 20px; border: 2px solid; }
+        .alert-success { background-color: #e8f5e8; border-color: #b8e6b8; color: #1a3a1a; }
+        .alert-error { background-color: #ffd4d4; border-color: #ffb3b3; color: #4a0000; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Fish Logger</h1>
 
-{% block title %}Submit Catch - Fish Logger{% endblock %}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
 
-{% block content %}
-<div class="hero">
-    <h1>Submit Catch Data</h1>
-    <p>Upload a fish photo and provide details for our research database</p>
-</div>
+        <div class="main-box">
+            <h2>Submit Catch Data</h2>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="fish_image">Fish Photo</label>
+                    <input type="file" id="fish_image" name="fish_image" accept="image/*" required>
+                </div>
+                <div class="form-group">
+                    <label for="species_label">Species</label>
+                    <input type="text" id="species_label" name="species_label" placeholder="e.g. Sea Bass">
+                </div>
+                <div class="form-group">
+                    <label for="uploader_name">Your Name</label>
+                    <input type="text" id="uploader_name" name="uploader_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location">
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" name="notes" rows="4"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Submit to Database</button>
+            </form>
+        </div>
 
-<div class="upload-form">
-    <form method="POST" enctype="multipart/form-data">
-        <div class="form-group">
-            <label for="fish_image">Photo *</label>
-            <input type="file" id="fish_image" name="fish_image" accept="image/*" required>
+        <div class="button-group">
+            <a href="{{ url_for('index') }}" class="btn-secondary">Back to Home</a>
+            <a href="{{ url_for('community') }}" class="btn-secondary">View Database</a>
         </div>
-        
-        <div class="form-group">
-            <label for="species_label">Species (if known)</label>
-            <input type="text" id="species_label" name="species_label" 
-                   placeholder="e.g., Trout, Sea Bass, or 'Unknown'">
-        </div>
-        
-        <div class="form-group">
-            <label for="uploader_name">Your Name *</label>
-            <input type="text" id="uploader_name" name="uploader_name" 
-                   placeholder="Fisher or researcher name" required>
-        </div>
-        
-        <div class="form-group">
-            <label for="location">Location</label>
-            <input type="text" id="location" name="location" 
-                   placeholder="Coordinates or location name">
-        </div>
-        
-        <div class="form-group">
-            <label for="notes">Notes</label>
-            <textarea id="notes" name="notes" 
-                      placeholder="Size, depth, conditions, etc."></textarea>
-        </div>
-        
-        <button type="submit" class="btn btn-primary">Submit to Database</button>
-    </form>
-</div>
-
-<style>
-    .upload-form {
-        max-width: 600px;
-        margin: 0 auto;
-        background-color: #e8f5e8;
-        border: 3px solid #d4f1d4;
-        padding: 40px;
-    }
-    
-    .form-group {
-        margin-bottom: 25px;
-    }
-    
-    .form-group label {
-        display: block;
-        margin-bottom: 10px;
-        font-weight: 600;
-        color: #1a3a1a;
-    }
-    
-    .form-group input[type="file"],
-    .form-group input[type="text"],
-    .form-group textarea {
-        width: 100%;
-        padding: 12px;
-        border: 2px solid #b8e6b8;
-        background-color: white;
-        font-size: 16px;
-        color: #1a3a1a;
-    }
-    
-    .form-group textarea {
-        min-height: 100px;
-        resize: vertical;
-    }
-    
-    .btn-primary {
-        width: 100%;
-        padding: 18px;
-        background-color: #b8e6b8;
-        border: 3px solid #7cb87c;
-        color: #1a3a1a;
-        font-size: 18px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-    
-    .btn-primary:hover {
-        background-color: #7cb87c;
-        color: white;
-    }
-</style>
-{% endblock %}
+    </div>
+</body>
+</html>

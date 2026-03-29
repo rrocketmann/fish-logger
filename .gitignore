@@ -57,3 +57,12 @@ training_history.json
 tmp/
 temp/
 *.tmp
+
+# Local Python env and caches
+.venv/
+new_env/
+.pip_cache/
+
+# Local runtime database files
+instance/*.db
+app/instance/*.db
